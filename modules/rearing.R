@@ -70,12 +70,16 @@ rearingServer <- function(input, output, session) {
   
   ns <- session$ns
   
-  fry_habitat <- reactive({
-    2
+  med_fry_habitat <- reactive({
+    median_flow_hab %>% 
+      filter(watershed == input$stream_reach) %>% 
+      pull(fry_hab)
   })
   
-  spawn_habitat <- reactive({
-    2.444444
+  med_spawn_habitat <- reactive({
+    median_flow_hab %>% 
+      filter(watershed == input$stream_reach) %>% 
+      pull(spawn_hab)
   })
   
   spawners <- reactive({
@@ -83,12 +87,12 @@ rearingServer <- function(input, output, session) {
   })
   
   output$spawn_hab_input <- renderUI({
-    textInput(ns('spawn'), 'Spawning', value = round(spawn_habitat(), 2), width = '80px')
+    textInput(ns('spawn'), 'Spawning', value = round(med_spawn_habitat(), 2), width = '80px')
   })
 
     
   output$fry_hab_input <- renderUI({
-    textInput(ns('fry'), 'Fry', value = round(fry_habitat(), 2), width = '80px')
+    textInput(ns('fry'), 'Fry', value = round(med_fry_habitat(), 2), width = '80px')
   })
   
   output$num_adults <- renderUI({
