@@ -11,50 +11,51 @@ rearingUI <- function(id) {
              radioButtons(inputId = ns('ic_fp'), label = NULL, choices = c('in channel', 'floodplain', 'both')),
              tags$div(style = 'display:inline-block', uiOutput(ns('spawn_hab_input'))),
              tags$div(style = 'display:inline-block', uiOutput(ns('fry_hab_input'))),
-             uiOutput(ns('num_adults'))
+             uiOutput(ns('num_adults')),
+             tags$h6('*default value is the median escapement of 2001-2015')
       ),
       column(width = 12, class = 'col-md-9',
              fluidRow(
-               column(width = 12, class = 'col-md-6',
+               column(width = 12, class = 'col-md-5',
                       tags$img(src = 'spawn.png'),
                       tags$h4('Spawners'),
-                      tags$table(
+                      tags$table(style = 'width: 90%',
                         tags$tr(
                           tags$td(tags$h5('Total')),
-                          tags$td('1000', align = "right")
+                          tags$td(tags$h5(textOutput(ns('num_spawners'))), align = "right")
                         ),
                         tags$tr(
                           tags$td(tags$h5('Available Habitat')),
-                          tags$td('68 acres', align = "right")
+                          tags$td(tags$h5(textOutput(ns('spawn_hab_exist'))), align = "right")
                         ),
                         tags$tr(
                           tags$td(tags$h5('Needed Habitat')),
-                          tags$td('2 acres', align = "right")
+                          tags$td(tags$h5(textOutput(ns('spawn_hab_need'))), align = "right")
                         ),
                         tags$tr(
                           tags$td(tags$h5('Habitat Limited')),
-                          tags$td('No', align = "right")
+                          tags$td(tags$h5('No'), align = "right")
                         )
                       )),
-               column(width = 12, class = 'col-md-6',
+               column(width = 12, class = 'col-md-5',
                       tags$img(src = 'fry.png', style = 'padding-top:17px;'),
                       tags$h4('Fry'),
-                      tags$table(
+                      tags$table(style = 'width: 90%',
                         tags$tr(
                           tags$td(tags$h5('Total')),
-                          tags$td('1000', align = "right")
+                          tags$td(tags$h5(textOutput(ns('num_fry'))), align = "right")
                         ),
                         tags$tr(
                           tags$td(tags$h5('Available Habitat')),
-                          tags$td('68 acres', align = "right")
+                          tags$td(tags$h5(textOutput(ns('fry_hab_exist'))), align = "right")
                         ),
                         tags$tr(
                           tags$td(tags$h5('Needed Habitat')),
-                          tags$td('2 acres', align = "right")
+                          tags$td(tags$h5(textOutput(ns('fry_hab_need'))), align = "right")
                         ),
                         tags$tr(
                           tags$td(tags$h5('Habitat Limited')),
-                          tags$td('No', align = "right")
+                          tags$td(tags$h5('No'), align = "right")
                         )
                       ))
              ),
@@ -82,9 +83,27 @@ rearingServer <- function(input, output, session) {
       pull(spawn_hab)
   })
   
-  spawners <- reactive({
-    40
+  default_spawners <- reactive({
+    grandtab %>% 
+      filter(watershed == input$stream_reach, type == 'Natural', year > 2000) %>% 
+      pull(count) %>% 
+      median()
   })
+  
+  spawners <- reactive({
+    # req(input$adults)
+    # input$adults
+    # TODO FIX
+    default_spawners()
+  })
+  
+  
+  output$num_spawners <- renderText({pretty_num(spawners())})
+
+
+  fry <- reactive(spawners() * .5 * 5500 * .485)
+  
+  output$num_fry <- renderText(pretty_num(fry()))
   
   output$spawn_hab_input <- renderUI({
     textInput(ns('spawn'), 'Spawning', value = round(med_spawn_habitat(), 2), width = '80px')
@@ -96,11 +115,19 @@ rearingServer <- function(input, output, session) {
   })
   
   output$num_adults <- renderUI({
-    textInput(inputId = ns('adults'), label = 'Adult Escapement', 
-              value = ceiling(spawners()), width = '160px')
+    textInput(inputId = ns('adults'), label = 'Adult Escapement*', 
+              value = ceiling(default_spawners()), width = '160px')
   })
-
   
+  fry_need <- reactive(fry() * fry_territory / 4046.86)
+  
+  spawn_need <- reactive(spawners() * .5 * 12.4 / 4046.86)
+  
+  output$fry_hab_need <- renderText(paste(as.character(pretty_num(fry_need(), 2)), 'acres'))
+  output$spawn_hab_need <- renderText(paste(as.character(pretty_num(spawn_need(), 2)), 'acres'))
+  
+  output$spawn_hab_exist <- renderText(paste(as.character(input$spawn), 'acres'))
+  output$fry_hab_exist <- renderText(paste(as.character(input$fry), 'acres'))
 }
 
 
