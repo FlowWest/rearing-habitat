@@ -36,6 +36,8 @@ spawning_locations <- cvpiaHabitat::watershed_lengths %>%
   pull(watershed) %>% unique()
 
 grandtab <- read_rds('data/grandtab.rds')
+doubling <- read_rds('data/doubling_goal.rds') 
+
 median_flow_hab <- read_rds('data/median_flow_hab.rds')
 
 

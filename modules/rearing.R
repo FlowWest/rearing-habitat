@@ -62,7 +62,9 @@ rearingUI <- function(id) {
                       )))
              ),
              fluidRow(
-               column(width = 12)
+               column(width = 12, class = 'col-md-10', 
+                      tags$h5('Grand Tab Escapement - Fall', style = 'width: 400px;'),
+                      plotlyOutput(ns('grand_plot')))
              ))
     )
     
@@ -131,6 +133,22 @@ rearingServer <- function(input, output, session) {
   
   output$spawn_hab_limited <- renderText(ifelse(as.numeric(input$spawn) - spawn_need() >= 0, 'No', 'Yes'))
   output$fry_hab_limited <- renderText(ifelse(as.numeric(input$fry) - fry_need() >= 0, 'No', 'Yes'))
+  
+  gt <- reactive(filter(grandtab, watershed == input$stream_reach))
+  dbd <- reactive(filter(doubling, watershed == input$stream_reach))
+  
+  output$grand_plot <- renderPlotly({
+    gt() %>% 
+      plot_ly(x = ~year, y = ~count, type = 'bar', color = ~type,
+              colors = c('#636363', '#252525'), hoverinfo = 'text', 
+              text = ~paste(type, '<br>', 'Year', year, '</br>Count', format(count, big.mark = ',', trim = FALSE))) %>% 
+      add_trace(data = dbd(), x = c(1952,2015), y = ~doubling_goal, type = 'scatter', mode = 'lines+markers',
+                line = list(color = 'rgb(0, 0, 0)', dash = 'dash'), inherit = FALSE,
+                hoverinfo = 'text', text = ~paste('Doubling Goal', format(doubling_goal, big.mark = ',', trim = FALSE))) %>%
+      layout(yaxis = list(title = 'count'), showlegend = FALSE, barmode = 'stack') %>% 
+      config(displayModeBar = FALSE)
+  })
+
 }
 
 
