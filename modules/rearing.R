@@ -35,7 +35,7 @@ rearingUI <- function(id) {
                                  ),
                                  tags$tr(
                                    tags$td(tags$h5('Habitat Limited')),
-                                   tags$td(tags$h5('No'), align = "right")
+                                   tags$td(tags$h5(textOutput(ns('spawn_hab_limited'))), align = "right")
                                  )
                       ))),
                column(width = 12, class = 'col-md-5',
@@ -57,7 +57,7 @@ rearingUI <- function(id) {
                                    ),
                                    tags$tr(
                                      tags$td(tags$h5('Habitat Limited')),
-                                     tags$td(tags$h5('No'), align = "right")
+                                     tags$td(tags$h5(textOutput(ns('fry_hab_limited'))), align = "right")
                                    )
                       )))
              ),
@@ -95,8 +95,6 @@ rearingServer <- function(input, output, session) {
   spawners <- reactive({
     req(input$adults)
     as.numeric(input$adults)
-    # TODO FIX
-    # default_spawners()
   })
   
   
@@ -130,6 +128,9 @@ rearingServer <- function(input, output, session) {
   
   output$spawn_hab_exist <- renderText(paste(as.character(input$spawn), 'acres'))
   output$fry_hab_exist <- renderText(paste(as.character(input$fry), 'acres'))
+  
+  output$spawn_hab_limited <- renderText(ifelse(as.numeric(input$spawn) - spawn_need() >= 0, 'No', 'Yes'))
+  output$fry_hab_limited <- renderText(ifelse(as.numeric(input$fry) - fry_need() >= 0, 'No', 'Yes'))
 }
 
 
