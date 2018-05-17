@@ -19,45 +19,47 @@ rearingUI <- function(id) {
                column(width = 12, class = 'col-md-5',
                       tags$img(src = 'spawn.png'),
                       tags$h4('Spawners'),
-                      tags$table(style = 'width: 90%',
-                        tags$tr(
-                          tags$td(tags$h5('Total')),
-                          tags$td(tags$h5(textOutput(ns('num_spawners'))), align = "right")
-                        ),
-                        tags$tr(
-                          tags$td(tags$h5('Available Habitat')),
-                          tags$td(tags$h5(textOutput(ns('spawn_hab_exist'))), align = "right")
-                        ),
-                        tags$tr(
-                          tags$td(tags$h5('Needed Habitat')),
-                          tags$td(tags$h5(textOutput(ns('spawn_hab_need'))), align = "right")
-                        ),
-                        tags$tr(
-                          tags$td(tags$h5('Habitat Limited')),
-                          tags$td(tags$h5('No'), align = "right")
-                        )
-                      )),
+                      tags$div(class = 'table-div',
+                      tags$table(
+                                 tags$tr(
+                                   tags$td(tags$h5('Total')),
+                                   tags$td(tags$h5(textOutput(ns('num_spawners'))), align = "right")
+                                 ),
+                                 tags$tr(
+                                   tags$td(tags$h5('Available Habitat')),
+                                   tags$td(tags$h5(textOutput(ns('spawn_hab_exist'))), align = "right")
+                                 ),
+                                 tags$tr(
+                                   tags$td(tags$h5('Needed Habitat')),
+                                   tags$td(tags$h5(textOutput(ns('spawn_hab_need'))), align = "right")
+                                 ),
+                                 tags$tr(
+                                   tags$td(tags$h5('Habitat Limited')),
+                                   tags$td(tags$h5('No'), align = "right")
+                                 )
+                      ))),
                column(width = 12, class = 'col-md-5',
                       tags$img(src = 'fry.png', style = 'padding-top:17px;'),
                       tags$h4('Fry'),
-                      tags$table(style = 'width: 90%',
-                        tags$tr(
-                          tags$td(tags$h5('Total')),
-                          tags$td(tags$h5(textOutput(ns('num_fry'))), align = "right")
-                        ),
-                        tags$tr(
-                          tags$td(tags$h5('Available Habitat')),
-                          tags$td(tags$h5(textOutput(ns('fry_hab_exist'))), align = "right")
-                        ),
-                        tags$tr(
-                          tags$td(tags$h5('Needed Habitat')),
-                          tags$td(tags$h5(textOutput(ns('fry_hab_need'))), align = "right")
-                        ),
-                        tags$tr(
-                          tags$td(tags$h5('Habitat Limited')),
-                          tags$td(tags$h5('No'), align = "right")
-                        )
-                      ))
+                      tags$div(class = 'table-div',
+                        tags$table(
+                                   tags$tr(
+                                     tags$td(tags$h5('Total')),
+                                     tags$td(tags$h5(textOutput(ns('num_fry'))), align = "right")
+                                   ),
+                                   tags$tr(
+                                     tags$td(tags$h5('Available Habitat')),
+                                     tags$td(tags$h5(textOutput(ns('fry_hab_exist'))), align = "right")
+                                   ),
+                                   tags$tr(
+                                     tags$td(tags$h5('Needed Habitat')),
+                                     tags$td(tags$h5(textOutput(ns('fry_hab_need'))), align = "right")
+                                   ),
+                                   tags$tr(
+                                     tags$td(tags$h5('Habitat Limited')),
+                                     tags$td(tags$h5('No'), align = "right")
+                                   )
+                      )))
              ),
              fluidRow(
                column(width = 12)
@@ -91,10 +93,10 @@ rearingServer <- function(input, output, session) {
   })
   
   spawners <- reactive({
-    # req(input$adults)
-    # input$adults
+    req(input$adults)
+    as.numeric(input$adults)
     # TODO FIX
-    default_spawners()
+    # default_spawners()
   })
   
   

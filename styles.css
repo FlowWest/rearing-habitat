@@ -1,5 +1,7 @@
-@media (max-width: 500) {
-  table {
-    width: 90%;
-  }
+table {
+  width: 100%;
+}
+
+.table-div {
+  width: 90%;
 }
