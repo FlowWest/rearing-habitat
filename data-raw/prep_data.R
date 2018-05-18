@@ -38,3 +38,27 @@ median_flows$fry_hab <- median_fry_hab
 median_flows$spawn_hab <- median_spawn_hab
 
 write_rds(median_flows, 'data/median_flow_hab.rds')
+
+# flow to rearing area-------------
+cvpiaHabitat::modeling_exist %>% View
+
+watersheds <- cvpiaHabitat::modeling_exist %>% 
+  filter(FR_juv) %>% 
+  pull(Watershed) %>% .[-1]
+
+ws_is <- paste0(gsub(' |-', '_', tolower(watersheds)), '_instream')
+x <- map_df(ws_is, function(w) {
+  df <- do.call(`::`, list(pkg = 'cvpiaHabitat', name = w))
+  select(df, flow_cfs) %>% 
+    summarise(min_flow = min(flow_cfs), max_flow = max(flow_cfs)) %>% 
+    mutate(watersed = w)
+})
+x
+
+# upper mid sac region streams flow 50-900
+
+# san joaquin tribs 25-6000
+
+cvpiaHabitat::tuolumne_river_instream %>% 
+  ggplot(aes(flow_cfs, FR_spawn_wua)) +
+  geom_line()

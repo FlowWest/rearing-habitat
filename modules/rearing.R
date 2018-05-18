@@ -161,6 +161,7 @@ rearingServer <- function(input, output, session) {
     } else {
       select(df, flow_cfs, FR_spawn_wua, FR_fry_wua)
     }
+  }) 
     
     output$wua <- renderPlotly({
       flow2area() %>%
@@ -173,7 +174,6 @@ rearingServer <- function(input, output, session) {
         config(displayModeBar = FALSE)
     })
     
-  })
   
 }
 
