@@ -20,7 +20,7 @@ rearingUI <- function(id) {
                       tags$img(src = 'spawn.png'),
                       tags$h4('Spawners'),
                       tags$div(class = 'table-div',
-                      tags$table(
+                               tags$table(
                                  tags$tr(
                                    tags$td(tags$h5('Total')),
                                    tags$td(tags$h5(textOutput(ns('num_spawners'))), align = "right")
@@ -37,34 +37,38 @@ rearingUI <- function(id) {
                                    tags$td(tags$h5('Habitat Limited')),
                                    tags$td(tags$h5(textOutput(ns('spawn_hab_limited'))), align = "right")
                                  )
-                      ))),
+                               ))),
                column(width = 12, class = 'col-md-5',
                       tags$img(src = 'fry.png', style = 'padding-top:17px;'),
                       tags$h4('Fry'),
                       tags$div(class = 'table-div',
-                        tags$table(
-                                   tags$tr(
-                                     tags$td(tags$h5('Total')),
-                                     tags$td(tags$h5(textOutput(ns('num_fry'))), align = "right")
-                                   ),
-                                   tags$tr(
-                                     tags$td(tags$h5('Available Habitat')),
-                                     tags$td(tags$h5(textOutput(ns('fry_hab_exist'))), align = "right")
-                                   ),
-                                   tags$tr(
-                                     tags$td(tags$h5('Needed Habitat')),
-                                     tags$td(tags$h5(textOutput(ns('fry_hab_need'))), align = "right")
-                                   ),
-                                   tags$tr(
-                                     tags$td(tags$h5('Habitat Limited')),
-                                     tags$td(tags$h5(textOutput(ns('fry_hab_limited'))), align = "right")
-                                   )
-                      )))
+                               tags$table(
+                                 tags$tr(
+                                   tags$td(tags$h5('Total')),
+                                   tags$td(tags$h5(textOutput(ns('num_fry'))), align = "right")
+                                 ),
+                                 tags$tr(
+                                   tags$td(tags$h5('Available Habitat')),
+                                   tags$td(tags$h5(textOutput(ns('fry_hab_exist'))), align = "right")
+                                 ),
+                                 tags$tr(
+                                   tags$td(tags$h5('Needed Habitat')),
+                                   tags$td(tags$h5(textOutput(ns('fry_hab_need'))), align = "right")
+                                 ),
+                                 tags$tr(
+                                   tags$td(tags$h5('Habitat Limited')),
+                                   tags$td(tags$h5(textOutput(ns('fry_hab_limited'))), align = "right")
+                                 )
+                               )))
              ),
              fluidRow(
                column(width = 12, class = 'col-md-10', 
-                      tags$h5('Grand Tab Escapement - Fall', style = 'width: 400px;'),
-                      plotlyOutput(ns('grand_plot')))
+                      tabsetPanel(
+                        tabPanel('Escapement', 
+                                 tags$h5('Grand Tab Escapement - Fall', style = 'width: 400px;'),
+                                 plotlyOutput(ns('grand_plot'))),
+                        tabPanel('Instream Habitat', plotlyOutput(ns('wua')))
+                      ))
              ))
     )
     
@@ -101,8 +105,8 @@ rearingServer <- function(input, output, session) {
   
   
   output$num_spawners <- renderText({pretty_num(spawners())})
-
-
+  
+  
   fry <- reactive(spawners() * .5 * 5500 * .485)
   
   output$num_fry <- renderText(pretty_num(fry()))
@@ -110,8 +114,8 @@ rearingServer <- function(input, output, session) {
   output$spawn_hab_input <- renderUI({
     textInput(ns('spawn'), 'Spawning', value = round(med_spawn_habitat(), 2), width = '80px')
   })
-
-    
+  
+  
   output$fry_hab_input <- renderUI({
     textInput(ns('fry'), 'Fry', value = round(med_fry_habitat(), 2), width = '80px')
   })
@@ -138,17 +142,39 @@ rearingServer <- function(input, output, session) {
   dbd <- reactive(filter(doubling, watershed == input$stream_reach))
   
   output$grand_plot <- renderPlotly({
-    gt() %>% 
+    gt() %>%
       plot_ly(x = ~year, y = ~count, type = 'bar', color = ~type,
               colors = c('#636363', '#252525'), hoverinfo = 'text', 
-              text = ~paste(type, '<br>', 'Year', year, '</br>Count', format(count, big.mark = ',', trim = FALSE))) %>% 
+              text = ~paste(type, '<br>', 'Year', year, '<br>Count', format(count, big.mark = ',', trim = FALSE))) %>% 
       add_trace(data = dbd(), x = c(1952,2015), y = ~doubling_goal, type = 'scatter', mode = 'lines+markers',
                 line = list(color = 'rgb(0, 0, 0)', dash = 'dash'), inherit = FALSE,
                 hoverinfo = 'text', text = ~paste('Doubling Goal', format(doubling_goal, big.mark = ',', trim = FALSE))) %>%
       layout(yaxis = list(title = 'count'), showlegend = FALSE, barmode = 'stack') %>% 
       config(displayModeBar = FALSE)
   })
-
+  
+  flow2area <- reactive({
+    ws_is <- paste0(gsub(' |-', '_', tolower(input$stream_reach)), '_instream')
+    df <- do.call(`::`, list(pkg = 'cvpiaHabitat', name = ws_is))
+    if (nrow(df) == 0) {
+      data.frame(flow_cfs = 0, FR_spawn_wua = 0, FR_fry_wua = 0)
+    } else {
+      select(df, flow_cfs, FR_spawn_wua, FR_fry_wua)
+    }
+    
+    output$wua <- renderPlotly({
+      flow2area() %>%
+        plot_ly(x = ~flow_cfs, y = ~FR_spawn_wua, type = 'scatter', mode = 'lines',
+                name = 'spawning', hoverinfo = 'text',
+                text = ~paste('flow:', pretty_num(flow_cfs),'<br>', 'WUA:', pretty_num(FR_spawn_wua))) %>% 
+        add_lines(y = ~FR_fry_wua, name = 'fry') %>% 
+        layout(yaxis = list(title = 'WUA (sqft/1000ft)', rangemode = 'tozero'),
+               xaxis = list(title = 'flow (cfs)')) %>% 
+        config(displayModeBar = FALSE)
+    })
+    
+  })
+  
 }
 
 
