@@ -11,6 +11,9 @@ rearingUI <- function(id) {
              radioButtons(inputId = ns('ic_fp'), label = NULL, choices = c('in channel', 'floodplain', 'both')),
              tags$div(style = 'display:inline-block', uiOutput(ns('spawn_hab_input'))),
              tags$div(style = 'display:inline-block', uiOutput(ns('fry_hab_input'))),
+             checkboxInput(ns('use_flow'), 'Adjust Habitat Values by Flow (cfs)'),
+             uiOutput(ns('fry_hab_flow')),
+             tags$h4('Adult Escapement*'),
              uiOutput(ns('num_adults')),
              tags$h6('*default value is the median escapement of 2001-2015')
       ),
@@ -119,16 +122,31 @@ rearingServer <- function(input, output, session) {
   output$num_fry <- renderText(pretty_num(fry()))
   
   output$spawn_hab_input <- renderUI({
-    textInput(ns('spawn'), 'Spawning', value = round(med_spawn_habitat(), 2), width = '80px')
+    if (input$use_flow) {
+      hab <- square_meters_to_acres(set_spawning_habitat(watershed = input$stream_reach, species = 'fr', flow = input$fry_flow, month = 1))
+      textInput(ns('spawn'), 'Spawning', value = round(hab, 2), width = '80px') 
+    } else {
+      textInput(ns('spawn'), 'Spawning', value = round(med_spawn_habitat(), 2), width = '80px')  
+    }
   })
   
   
   output$fry_hab_input <- renderUI({
-    textInput(ns('fry'), 'Fry', value = round(med_fry_habitat(), 2), width = '80px')
+    if (input$use_flow) {
+      hab <- square_meters_to_acres(set_instream_habitat(watershed = input$stream_reach, species = 'fr', life_stage = 'fry', flow = input$fry_flow, month = 1))
+      textInput(ns('fry'), 'Fry', value = round(hab, 2), width = '80px')
+    } else {
+      textInput(ns('fry'), 'Fry', value = round(med_fry_habitat(), 2), width = '80px') 
+    }
+  })
+  
+  
+  output$fry_hab_flow <- renderUI({
+    numericInput(inputId = ns('fry_flow'), label = 'Flow (cfs)', value = 0, width = '80px')
   })
   
   output$num_adults <- renderUI({
-    textInput(inputId = ns('adults'), label = 'Adult Escapement*', 
+    textInput(inputId = ns('adults'), label = NULL, 
               value = ceiling(default_spawners()), width = '160px')
   })
   
@@ -176,7 +194,13 @@ rearingServer <- function(input, output, session) {
         config(displayModeBar = FALSE)
     })
     
-  
+    observe({
+      if (input$use_flow) {
+        shinyjs::enable("fry_hab_flow")
+      } else {
+        shinyjs::disable("fry_hab_flow")
+      }
+    })
 }
 
 
