@@ -107,7 +107,14 @@ rearingServer <- function(input, output, session) {
   output$num_spawners <- renderText({pretty_num(spawners())})
   
   
-  fry <- reactive(spawners() * .5 * 5500 * .485)
+  fry <- reactive({
+    req(input$spawn)
+    if (spawn_need() > as.numeric(input$spawn)) {
+      as.numeric(input$spawn) * 4046.86 / 12.4 * 5500 * .485
+    } else {
+      spawners() * .5 * 5500 * .485
+    }
+})
   
   output$num_fry <- renderText(pretty_num(fry()))
   
