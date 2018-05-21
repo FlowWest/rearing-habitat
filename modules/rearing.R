@@ -152,24 +152,19 @@ rearingServer <- function(input, output, session) {
       layout(yaxis = list(title = 'count'), showlegend = FALSE, barmode = 'stack') %>% 
       config(displayModeBar = FALSE)
   })
-  
-  flow2area <- reactive({
-    ws_is <- paste0(gsub(' |-', '_', tolower(input$stream_reach)), '_instream')
-    df <- do.call(`::`, list(pkg = 'cvpiaHabitat', name = ws_is))
-    if (nrow(df) == 0) {
-      data.frame(flow_cfs = 0, FR_spawn_wua = 0, FR_fry_wua = 0)
-    } else {
-      select(df, flow_cfs, FR_spawn_wua, FR_fry_wua)
-    }
-  }) 
+
     
     output$wua <- renderPlotly({
-      flow2area() %>%
-        plot_ly(x = ~flow_cfs, y = ~FR_spawn_wua, type = 'scatter', mode = 'lines',
+      flow_to_acres %>% 
+        filter(watershed == input$stream_reach) %>% 
+        plot_ly(x = ~flow, y = ~spawn, type = 'scatter', mode = 'lines',
                 name = 'spawning', hoverinfo = 'text',
-                text = ~paste('flow:', pretty_num(flow_cfs),'<br>', 'WUA:', pretty_num(FR_spawn_wua))) %>% 
-        add_lines(y = ~FR_fry_wua, name = 'fry') %>% 
-        layout(yaxis = list(title = 'WUA (sqft/1000ft)', rangemode = 'tozero'),
+                text = ~paste(pretty_num(flow), 'cfs','<br>', pretty_num(spawn), 'acres')) %>% 
+        add_lines(y = ~fry, name = 'fry', 
+                  text = ~paste(pretty_num(flow), 'cfs','<br>', pretty_num(fry), 'acres')) %>% 
+        add_lines(y = ~juv, name = 'juvenile', 
+                  text = ~paste(pretty_num(flow), 'cfs','<br>', pretty_num(juv), 'acres')) %>% 
+        layout(yaxis = list(title = 'habitat (acres)', rangemode = 'tozero'),
                xaxis = list(title = 'flow (cfs)')) %>% 
         config(displayModeBar = FALSE)
     })
