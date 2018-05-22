@@ -2,7 +2,7 @@ rearingUI <- function(id) {
   ns <- NS(id)
   
   tagList(
-    fluidRow(
+    fluidRow(style = 'padding-top: 30px',
       column(width = 12, class = 'col-md-3',
              selectInput(ns('stream_reach'), 'Reach', 
                          choices = spawning_locations,
@@ -19,50 +19,52 @@ rearingUI <- function(id) {
       ),
       column(width = 12, class = 'col-md-9',
              fluidRow(
-               column(width = 12, class = 'col-md-5',
-                      tags$img(src = 'spawn.png'),
-                      tags$h4('Spawners'),
-                      tags$div(class = 'table-div',
-                               tags$table(
-                                 tags$tr(
-                                   tags$td(tags$h5('Total')),
-                                   tags$td(tags$h5(textOutput(ns('num_spawners'))), align = "right")
-                                 ),
-                                 tags$tr(
-                                   tags$td(tags$h5('Available Habitat')),
-                                   tags$td(tags$h5(textOutput(ns('spawn_hab_exist'))), align = "right")
-                                 ),
-                                 tags$tr(
-                                   tags$td(tags$h5('Needed Habitat')),
-                                   tags$td(tags$h5(textOutput(ns('spawn_hab_need'))), align = "right")
-                                 ),
-                                 tags$tr(
-                                   tags$td(tags$h5('Habitat Limited')),
-                                   tags$td(tags$h5(textOutput(ns('spawn_hab_limited'))), align = "right")
-                                 )
-                               ))),
-               column(width = 12, class = 'col-md-5',
-                      tags$img(src = 'fry.png', style = 'padding-top:17px;'),
-                      tags$h4('Fry'),
-                      tags$div(class = 'table-div',
-                               tags$table(
-                                 tags$tr(
-                                   tags$td(tags$h5('Total')),
-                                   tags$td(tags$h5(textOutput(ns('num_fry'))), align = "right")
-                                 ),
-                                 tags$tr(
-                                   tags$td(tags$h5('Available Habitat')),
-                                   tags$td(tags$h5(textOutput(ns('fry_hab_exist'))), align = "right")
-                                 ),
-                                 tags$tr(
-                                   tags$td(tags$h5('Needed Habitat')),
-                                   tags$td(tags$h5(textOutput(ns('fry_hab_need'))), align = "right")
-                                 ),
-                                 tags$tr(
-                                   tags$td(tags$h5('Habitat Limited')),
-                                   tags$td(tags$h5(textOutput(ns('fry_hab_limited'))), align = "right")
-                                 )
-                               )))
+               column(width = 12, class = 'col-md-6',
+                      tags$div(class = 'fish_box',
+                               tags$img(src = 'spawn.png'),
+                               tags$h4('Spawners'),
+                               tags$div(class = 'table-div',
+                                        tags$table(
+                                          tags$tr(
+                                            tags$td(tags$h5('Total')),
+                                            tags$td(tags$h5(textOutput(ns('num_spawners'))), align = "right")
+                                          ),
+                                          tags$tr(
+                                            tags$td(tags$h5('Available Habitat')),
+                                            tags$td(tags$h5(textOutput(ns('spawn_hab_exist'))), align = "right")
+                                          ),
+                                          tags$tr(
+                                            tags$td(tags$h5('Needed Habitat')),
+                                            tags$td(tags$h5(textOutput(ns('spawn_hab_need'))), align = "right")
+                                          ),
+                                          tags$tr(
+                                            tags$td(tags$h5('Habitat Limited')),
+                                            tags$td(tags$h5(textOutput(ns('spawn_hab_limited'))), align = "right")
+                                          )
+                                        )))),
+               column(width = 12, class = 'col-md-6',
+                      tags$div(class = 'fish_box',
+                               tags$img(src = 'fry.png', style = 'padding-top:17px;'),
+                               tags$h4('Fry'),
+                               tags$div(class = 'table-div',
+                                        tags$table(
+                                          tags$tr(
+                                            tags$td(tags$h5('Total')),
+                                            tags$td(tags$h5(textOutput(ns('num_fry'))), align = "right")
+                                          ),
+                                          tags$tr(
+                                            tags$td(tags$h5('Available Habitat')),
+                                            tags$td(tags$h5(textOutput(ns('fry_hab_exist'))), align = "right")
+                                          ),
+                                          tags$tr(
+                                            tags$td(tags$h5('Needed Habitat')),
+                                            tags$td(tags$h5(textOutput(ns('fry_hab_need'))), align = "right")
+                                          ),
+                                          tags$tr(
+                                            tags$td(tags$h5('Habitat Limited')),
+                                            tags$td(tags$h5(textOutput(ns('fry_hab_limited'))), align = "right")
+                                          )
+                                        ))))
              ),
              fluidRow(
                column(width = 12, class = 'col-md-10', 
@@ -117,7 +119,7 @@ rearingServer <- function(input, output, session) {
     } else {
       spawners() * .5 * 5500 * .485
     }
-})
+  })
   
   output$num_fry <- renderText(pretty_num(fry()))
   
@@ -177,30 +179,30 @@ rearingServer <- function(input, output, session) {
       layout(yaxis = list(title = 'count'), showlegend = FALSE, barmode = 'stack') %>% 
       config(displayModeBar = FALSE)
   })
-
-    
-    output$wua <- renderPlotly({
-      flow_to_acres %>% 
-        filter(watershed == input$stream_reach) %>% 
-        plot_ly(x = ~flow, y = ~spawn, type = 'scatter', mode = 'lines',
-                name = 'spawning', hoverinfo = 'text',
-                text = ~paste(pretty_num(flow), 'cfs','<br>', pretty_num(spawn), 'acres')) %>% 
-        add_lines(y = ~fry, name = 'fry', 
-                  text = ~paste(pretty_num(flow), 'cfs','<br>', pretty_num(fry), 'acres')) %>% 
-        add_lines(y = ~juv, name = 'juvenile', 
-                  text = ~paste(pretty_num(flow), 'cfs','<br>', pretty_num(juv), 'acres')) %>% 
-        layout(yaxis = list(title = 'habitat (acres)', rangemode = 'tozero'),
-               xaxis = list(title = 'flow (cfs)')) %>% 
-        config(displayModeBar = FALSE)
-    })
-    
-    observe({
-      if (input$use_flow) {
-        shinyjs::enable("fry_hab_flow")
-      } else {
-        shinyjs::disable("fry_hab_flow")
-      }
-    })
+  
+  
+  output$wua <- renderPlotly({
+    flow_to_acres %>% 
+      filter(watershed == input$stream_reach) %>% 
+      plot_ly(x = ~flow, y = ~spawn, type = 'scatter', mode = 'lines',
+              name = 'spawning', hoverinfo = 'text',
+              text = ~paste(pretty_num(flow), 'cfs','<br>', pretty_num(spawn), 'acres')) %>% 
+      add_lines(y = ~fry, name = 'fry', 
+                text = ~paste(pretty_num(flow), 'cfs','<br>', pretty_num(fry), 'acres')) %>% 
+      add_lines(y = ~juv, name = 'juvenile', 
+                text = ~paste(pretty_num(flow), 'cfs','<br>', pretty_num(juv), 'acres')) %>% 
+      layout(yaxis = list(title = 'habitat (acres)', rangemode = 'tozero'),
+             xaxis = list(title = 'flow (cfs)')) %>% 
+      config(displayModeBar = FALSE)
+  })
+  
+  observe({
+    if (input$use_flow) {
+      shinyjs::enable("fry_hab_flow")
+    } else {
+      shinyjs::disable("fry_hab_flow")
+    }
+  })
 }
 
 

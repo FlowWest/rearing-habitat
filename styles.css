@@ -5,3 +5,8 @@ table {
 .table-div {
   width: 90%;
 }
+
+.fish_box {
+  background-color: #ddd;
+  padding: 30px 0px 40px 40px;
+}
