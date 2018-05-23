@@ -7,14 +7,18 @@ rearingUI <- function(id) {
              selectInput(ns('stream_reach'), 'Reach', 
                          choices = spawning_locations,
                          width = '220px'),
-             tags$h4('Habitat Available (Acres)'),
-             radioButtons(inputId = ns('ic_fp'), label = NULL, choices = c('in channel', 'floodplain', 'both')),
-             tags$div(style = 'display:inline-block', uiOutput(ns('spawn_hab_input'))),
-             tags$div(style = 'display:inline-block', uiOutput(ns('fry_hab_input'))),
-             checkboxInput(ns('use_flow'), 'Adjust Habitat Values by Flow (cfs)'),
-             uiOutput(ns('fry_hab_flow')),
-             tags$h4('Adult Escapement*'),
+             tags$h5('Adult Escapement*'),
              uiOutput(ns('num_adults')),
+             tags$h4('Habitat Available'),
+             tags$h5('Spawning Habitat'),
+             tags$div(style = 'display:inline-block', uiOutput(ns('spawn_hab_input'))),
+             tags$div(style = 'display:inline-block', tags$p('acres')),
+             uiOutput(ns('spawn_hab_flow')),
+             tags$h5('Fry Rearing Habitat'),
+             tags$div(style = 'display:inline-block', uiOutput(ns('fry_hab_input'))),
+             tags$div(style = 'display:inline-block', tags$p('acres')),
+             uiOutput(ns('fry_hab_flow')),
+             checkboxInput(ns('use_flow'), 'Adjust Habitat Values by Flow (cfs)'),
              tags$h6('*default value is the median escapement of 2001-2015')
       ),
       column(width = 12, class = 'col-md-9',
@@ -125,26 +129,34 @@ rearingServer <- function(input, output, session) {
   
   output$spawn_hab_input <- renderUI({
     if (input$use_flow) {
-      hab <- square_meters_to_acres(set_spawning_habitat(watershed = input$stream_reach, species = 'fr', flow = input$fry_flow, month = 1))
-      textInput(ns('spawn'), 'Spawning', value = round(hab, 2), width = '80px') 
+      hab <- square_meters_to_acres(set_spawning_habitat(watershed = input$stream_reach, 
+                                                         species = 'fr', 
+                                                         flow = input$spawn, month = 1))
+      textInput(ns('spawn'), label = NULL, value = round(hab, 2), width = '80px') 
     } else {
-      textInput(ns('spawn'), 'Spawning', value = round(med_spawn_habitat(), 2), width = '80px')  
+      textInput(ns('spawn'), label = NULL, value = round(med_spawn_habitat(), 2), width = '80px')  
     }
   })
   
   
   output$fry_hab_input <- renderUI({
     if (input$use_flow) {
-      hab <- square_meters_to_acres(set_instream_habitat(watershed = input$stream_reach, species = 'fr', life_stage = 'fry', flow = input$fry_flow, month = 1))
-      textInput(ns('fry'), 'Fry', value = round(hab, 2), width = '80px')
+      hab <- square_meters_to_acres(set_instream_habitat(watershed = input$stream_reach, 
+                                                         species = 'fr', life_stage = 'fry', 
+                                                         flow = input$fry_flow, month = 1))
+      textInput(ns('fry'), label = NULL, value = round(hab, 2), width = '80px')
     } else {
-      textInput(ns('fry'), 'Fry', value = round(med_fry_habitat(), 2), width = '80px') 
+      textInput(ns('fry'), label = NULL, value = round(med_fry_habitat(), 2), width = '80px') 
     }
   })
   
   
   output$fry_hab_flow <- renderUI({
     numericInput(inputId = ns('fry_flow'), label = 'Flow (cfs)', value = 0, width = '80px')
+  })
+  
+  output$spawn_hab_flow <- renderUI({
+    numericInput(inputId = ns('spawn_flow'), label = 'Flow (cfs)', value = 0, width = '80px')
   })
   
   output$num_adults <- renderUI({
