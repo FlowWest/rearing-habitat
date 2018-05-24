@@ -4,6 +4,7 @@ library(shinyjs)
 library(shinythemes)
 library(plotly)
 library(tidyverse)
+library(lubridate)
 library(cvpiaHabitat)
 library(cvpiaFlow)
 
@@ -42,3 +43,6 @@ median_flow_hab <- read_rds('data/median_flow_hab.rds')
 
 flow_to_acres <- read_rds('data/flow_to_acres.rds')
 
+flows <- cvpiaFlow::flows_cfs %>% 
+  filter(between(date, as.Date('1980-01-01'), as.Date('1999-12-31'))) %>% 
+  gather(watershed, flow_cfs, -date) 
