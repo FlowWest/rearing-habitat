@@ -7,6 +7,62 @@ table {
 }
 
 .fish_box {
-  background-color: #ddd;
+  background-color: #ccc;
   padding: 30px 0px 40px 40px;
+}
+
+
+#calc_out {
+  background-color: #ccc;
+  max-width: 290px;
+  padding: 2px 10px 2px 20px;
+}
+
+#modeling_details {
+  padding: 20px;
+}
+
+#about_pg {
+  background-image: url('IMG_0878.JPG');
+  background-position: left top;
+  background-color: #000000; 
+  background-size: cover;
+  height: 1000px;
+}
+
+#about_txt {
+  padding-top: 60px;
+  width: 600px;
+  margin: auto;
+  color: #ffffff;
+  font-size: 16px;
+}
+
+#about_txt_box {
+  height: 993px;
+  background-color: #000000;
+  opacity: 0.8;
+  max-width: 800px;
+  margin: auto;
+}
+
+.row {
+  margin-top: -15px;
+}
+
+.hr {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 600px) {
+
+  #about_txt_box{
+    width: 100%;
+    margin: 0;
+  }
+  #about_txt {
+    width:100%;
+    max-width: 320px;
+  }
 }

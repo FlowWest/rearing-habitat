@@ -1,3 +1,4 @@
 shinyServer(function(input, output) {
-  callModule(rearingServer, 'app')
+  callModule(instreamServer, 'app')
+  callModule(fp, 'one')
 })
