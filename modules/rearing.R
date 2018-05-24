@@ -9,17 +9,22 @@ rearingUI <- function(id) {
                          width = '220px'),
              tags$h5('Adult Escapement*'),
              uiOutput(ns('num_adults')),
-             tags$h4('Habitat Available'),
+             tags$hr(),
+             tags$h4('Habitat Available**'),
              tags$h5('Spawning Habitat'),
+             checkboxInput(ns('use_flow_s'), 'Adjust spawning acres with flow'),
+             uiOutput(ns('spawn_hab_flow')),
              tags$div(style = 'display:inline-block', uiOutput(ns('spawn_hab_input'))),
              tags$div(style = 'display:inline-block', tags$p('acres')),
-             uiOutput(ns('spawn_hab_flow')),
+             # tags$hr(),
              tags$h5('Fry Rearing Habitat'),
+             checkboxInput(ns('use_flow_f'), 'Adjust rearing acres with flow'),
+             uiOutput(ns('fry_hab_flow')),
              tags$div(style = 'display:inline-block', uiOutput(ns('fry_hab_input'))),
              tags$div(style = 'display:inline-block', tags$p('acres')),
-             uiOutput(ns('fry_hab_flow')),
-             checkboxInput(ns('use_flow'), 'Adjust Habitat Values by Flow (cfs)'),
-             tags$h6('*default value is the median escapement of 2001-2015')
+             tags$hr(),
+             tags$p('*default value is the median escapement of 2001-2015'),
+             tags$p('**default values are the habitat acerage at the median flows')
       ),
       column(width = 12, class = 'col-md-9',
              fluidRow(
@@ -128,10 +133,17 @@ rearingServer <- function(input, output, session) {
   output$num_fry <- renderText(pretty_num(fry()))
   
   output$spawn_hab_input <- renderUI({
-    if (input$use_flow) {
-      hab <- square_meters_to_acres(set_spawning_habitat(watershed = input$stream_reach, 
-                                                         species = 'fr', 
-                                                         flow = input$spawn, month = 1))
+    if (input$use_flow_s) {
+      if (input$stream_reach == 'Upper Sacramento River') {
+        hab <- square_meters_to_acres(set_spawning_habitat(watershed = input$stream_reach, 
+                                                           species = 'fr', 
+                                                           flow = input$spawn, month = 1))
+      } else {
+        hab <- square_meters_to_acres(set_spawning_habitat(watershed = input$stream_reach, 
+                                                           species = 'fr', 
+                                                           flow = input$spawn))
+      }
+
       textInput(ns('spawn'), label = NULL, value = round(hab, 2), width = '80px') 
     } else {
       textInput(ns('spawn'), label = NULL, value = round(med_spawn_habitat(), 2), width = '80px')  
@@ -140,10 +152,15 @@ rearingServer <- function(input, output, session) {
   
   
   output$fry_hab_input <- renderUI({
-    if (input$use_flow) {
+    if (input$use_flow_f) {
+      if (input$stream_reach == 'Upper Sacramento River') {
+        hab <- square_meters_to_acres(set_instream_habitat(watershed = input$stream_reach, 
+                                                           species = 'fr', life_stage = 'fry', 
+                                                           flow = input$fry_flow, month = 1))
+      }
       hab <- square_meters_to_acres(set_instream_habitat(watershed = input$stream_reach, 
                                                          species = 'fr', life_stage = 'fry', 
-                                                         flow = input$fry_flow, month = 1))
+                                                         flow = input$fry_flow))
       textInput(ns('fry'), label = NULL, value = round(hab, 2), width = '80px')
     } else {
       textInput(ns('fry'), label = NULL, value = round(med_fry_habitat(), 2), width = '80px') 
@@ -152,11 +169,13 @@ rearingServer <- function(input, output, session) {
   
   
   output$fry_hab_flow <- renderUI({
-    numericInput(inputId = ns('fry_flow'), label = 'Flow (cfs)', value = 0, width = '80px')
+    req(input$use_flow_f)
+    numericInput(inputId = ns('fry_flow'), label = 'Flow (cfs)', value = 100, width = '80px')
   })
   
   output$spawn_hab_flow <- renderUI({
-    numericInput(inputId = ns('spawn_flow'), label = 'Flow (cfs)', value = 0, width = '80px')
+    req(input$use_flow_s)
+    numericInput(inputId = ns('spawn_flow'), label = 'Flow (cfs)', value = 100, width = '80px')
   })
   
   output$num_adults <- renderUI({
@@ -208,13 +227,21 @@ rearingServer <- function(input, output, session) {
       config(displayModeBar = FALSE)
   })
   
-  observe({
-    if (input$use_flow) {
-      shinyjs::enable("fry_hab_flow")
-    } else {
-      shinyjs::disable("fry_hab_flow")
-    }
-  })
+  # observe({
+  #   if (input$use_flow_s) {
+  #     shinyjs::enable("spawn_hab_flow")
+  #   } else {
+  #     shinyjs::disable("spawn_hab_flow")
+  #   }
+  # })
+  # 
+  # observe({
+  #   if (input$use_flow_f) {
+  #     shinyjs::enable("fry_hab_flow")
+  #   } else {
+  #     shinyjs::disable("fry_hab_flow")
+  #   }
+  # })
 }
 
 
