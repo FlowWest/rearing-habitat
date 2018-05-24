@@ -28,8 +28,8 @@ instreamUI <- function(id) {
              tags$div(style = 'display:inline-block', uiOutput(ns('fry_hab_input'))),
              tags$div(style = 'display:inline-block', tags$p('acres')),
              tags$hr(),
-             tags$p('*default value is the median escapement of 2001-2015'),
-             tags$p('**default values are the habitat acerage at the median flows')
+             tags$h5('Calculator Assumptions'),
+             htmlTemplate('templates/calculator_assumptions.html')
       ),
       column(width = 12, class = 'col-md-9',
              fluidRow(
