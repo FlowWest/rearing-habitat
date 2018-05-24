@@ -1,10 +1,9 @@
 tagList(
   shinyjs::useShinyjs(),
   navbarPage(
-    windowTitle = 'CVPIA Habitat Calculator',
-    title = NULL,
+    title = 'CVPIA Habitat Calculator',
     collapsible = TRUE,
-    theme = shinytheme('paper'),
+    theme = shinytheme('flatly'),
     header = includeCSS('styles.css'),
     tabPanel('Instream',
              instreamUI('app')),

@@ -2,15 +2,26 @@ table {
   width: 100%;
 }
 
+a {
+  color: #aa4465;
+}
+
+a:hover {
+  color: #4e1f2e;
+}
+
+h5 {
+  font-size: 16px;
+}
+
 .table-div {
   width: 90%;
 }
 
 .fish_box {
-  background-color: #ddd;
+  background-color: aliceblue;
   padding: 30px 0px 40px 40px;
 }
-
 
 #calc_out {
   background-color: #ccc;

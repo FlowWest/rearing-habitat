@@ -4,25 +4,26 @@ instreamUI <- function(id) {
   tagList(
     fluidRow(
       column(width = 12,
-             tags$h2('Instream Rearing Habitat Calculator'))
+             tags$h2('Instream Rearing Habitat Calculator')
+             )
       ),
     fluidRow(style = 'padding-top: 30px',
       column(width = 12, class = 'col-md-3',
              tags$h4('Inputs'),
-             tags$h6('Watershed'),
+             tags$h5('Watershed'),
              selectInput(ns('stream_reach'), label = NULL, 
                          choices = spawning_locations,
                          width = '220px'),
-             tags$h6('Adult Escapement*'),
+             tags$h5('Adult Escapement'),
              uiOutput(ns('num_adults')),
              tags$hr(),
-             tags$h5('Habitat Available**'),
-             tags$h6('Spawning Habitat'),
+             tags$h4('Habitat Available'),
+             tags$h5('Spawning Habitat'),
              checkboxInput(ns('use_flow_s'), 'Adjust spawning acres with flow'),
              uiOutput(ns('spawn_hab_flow')),
              tags$div(style = 'display:inline-block', uiOutput(ns('spawn_hab_input'))),
              tags$div(style = 'display:inline-block', tags$p('acres')),
-             tags$h6('Fry Rearing Habitat'),
+             tags$h5('Fry Rearing Habitat'),
              checkboxInput(ns('use_flow_f'), 'Adjust rearing acres with flow'),
              uiOutput(ns('fry_hab_flow')),
              tags$div(style = 'display:inline-block', uiOutput(ns('fry_hab_input'))),
@@ -155,9 +156,9 @@ instreamServer <- function(input, output, session) {
                                                            flow = input$spawn_flow))
       }
 
-      textInput(ns('spawn'), label = NULL, value = round(hab, 2), width = '80px') 
+      textInput(ns('spawn'), label = NULL, value = round(hab, 2), width = '100px') 
     } else {
-      textInput(ns('spawn'), label = NULL, value = round(med_spawn_habitat(), 2), width = '80px')  
+      textInput(ns('spawn'), label = NULL, value = round(med_spawn_habitat(), 2), width = '100px')  
     }
   })
   
@@ -173,21 +174,21 @@ instreamServer <- function(input, output, session) {
                                                            species = 'fr', life_stage = 'fry', 
                                                            flow = input$fry_flow))
       }
-      textInput(ns('fry'), label = NULL, value = round(hab, 2), width = '80px')
+      textInput(ns('fry'), label = NULL, value = round(hab, 2), width = '100px')
     } else {
-      textInput(ns('fry'), label = NULL, value = round(med_fry_habitat(), 2), width = '80px') 
+      textInput(ns('fry'), label = NULL, value = round(med_fry_habitat(), 2), width = '100px') 
     }
   })
   
   
   output$fry_hab_flow <- renderUI({
     req(input$use_flow_f)
-    numericInput(inputId = ns('fry_flow'), label = 'Flow (cfs)', value = 1000, width = '80px')
+    numericInput(inputId = ns('fry_flow'), label = 'Flow (cfs)', value = 1000, width = '100px')
   })
   
   output$spawn_hab_flow <- renderUI({
     req(input$use_flow_s)
-    numericInput(inputId = ns('spawn_flow'), label = 'Flow (cfs)', value = 1000, width = '80px')
+    numericInput(inputId = ns('spawn_flow'), label = 'Flow (cfs)', value = 1000, width = '100px')
   })
   
   output$num_adults <- renderUI({
