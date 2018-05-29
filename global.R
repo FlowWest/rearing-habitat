@@ -12,7 +12,6 @@ library(cvpiaFlow)
 library(readxl)
 
 source('modules/instream.R')
-
 # functions -------------
 pretty_num <- function(num, places = 0) {
   format(round(num, places), big.mark = ',', trim = FALSE)

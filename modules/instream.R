@@ -257,5 +257,3 @@ instreamServer <- function(input, output, session) {
   })
   
 }
-
-

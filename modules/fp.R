@@ -7,19 +7,22 @@ fp_UI <- function(id) {
              tags$h2('Floodplain Habitat Calculator'))
     ),
     fluidRow(
-      column(width = 3,
-             h5('Inputs'),
-             selectInput(ns('watershed'), 'Stream',
+      column(width = 12, class = 'col-md-3',
+             h4('Inputs'),
+             selectInput(ns('watershed'), 'Stream', 
                          choices = watersheds$watershed, width = '210px'),
              radioButtons(ns('species'), 'Species', 
                           choiceNames = c('Fall Run', 'Spring Run', 'Steelhead'), 
                           choiceValues = c('fr', 'sr', 'st')),
              numericInput(ns('flow'), 'Flow (cfs)', 1000, width = '210px'),
-             numericInput(ns('suit'), 'Suitability Factor', .27, 0, 1, .01, width = '210px')),
-      column(width = 5,
-             h5('Suitable Floodplain Area (acres)'),
+             numericInput(ns('suit'), 'Suitability Factor', .27, 0, 1, .01, width = '210px'),
+             htmlTemplate('templates/fp_modeling_details.html', 
+                          mod_details = textOutput(ns('mod_details')),
+                          mod_link = uiOutput(ns('ref_link')))),
+      column(width = 12, class = 'col-md-5',
+             h4('Suitable Floodplain Area (acres)'),
              div(id = 'calc_out', h5(textOutput(ns('fp_acres')))),
-             br(),
+             hr(),
              h5('Details'),
              tabsetPanel(
                tabPanel('Hydrology', 
@@ -29,14 +32,10 @@ fp_UI <- function(id) {
                         h6('CALSIM modeled flow 1980-1999'),
                         plotlyOutput(ns('habitat_time'))),
                tabPanel('Flow to Floodplain Area', 
-                        plotlyOutput(ns('flow2area_plt'))),
-               tabPanel('Modeling Details',
-                        div(id = 'modeling_details',
-                            textOutput(ns('mod_details')),
-                            uiOutput(ns('ref_link')))) 
-                        )),
-      column(width = 4,
-             h5('Habitat Extents'),
+                        plotlyOutput(ns('flow2area_plt')))
+             )),
+      column(width = 12, class = 'col-md-4',
+             h4('Habitat Extents'),
              leafletOutput(ns('extents'), height = '500px'))
     )
   )
