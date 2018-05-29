@@ -83,7 +83,8 @@ instreamUI <- function(id) {
              ),
              fluidRow(
                column(width = 12, class = 'col-md-10', 
-                      tags$h5('Details'),
+                      tags$hr(),
+                      tags$h4('Details'),
                       tabsetPanel(
                         tabPanel('Escapement', 
                                  tags$h6('Grand Tab Escapement - Fall', style = 'width: 400px;'),
