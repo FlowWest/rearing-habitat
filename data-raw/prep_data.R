@@ -2,14 +2,14 @@ library(tidyverse)
 library(cvpiaFlow)
 library(cvpiaHabitat)
 library(lubridate)
-library(grandTab)
+# library(grandTab)
 
 # prep grandtab data------
-grandTab::grandtab %>% 
-  mutate(watershed = ifelse(watershed == 'Upper-mid Sacramento River', 'Upper Sacramento River', watershed)) %>% 
-  group_by(year, watershed, run, type) %>% 
-  summarise(count = sum(count, na.rm = TRUE)) %>% 
-  write_rds('data/grandtab.rds')
+# grandTab::grandtab %>% 
+#   mutate(watershed = ifelse(watershed == 'Upper-mid Sacramento River', 'Upper Sacramento River', watershed)) %>% 
+#   group_by(year, watershed, run, type) %>% 
+#   summarise(count = sum(count, na.rm = TRUE)) %>% 
+#   write_rds('data/grandtab.rds')
 
 # get median flows for spawning and rearing---------
 square_meters_to_acres <- function(sq_mt) {return(sq_mt * 0.000247105)}

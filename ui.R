@@ -1,7 +1,7 @@
 tagList(
   shinyjs::useShinyjs(),
   navbarPage(
-    title = 'Central Valley Habitat Calculator',
+    title = 'Central Valley Salmon Habitat Repository',
     collapsible = TRUE,
     theme = shinytheme('flatly'),
     header = includeCSS('styles.css'),
