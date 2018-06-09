@@ -75,10 +75,18 @@ fp <- function(input, output, session) {
     if (input$species == 'sr' & no_spring_run()) {
       data.frame()
     } else {
-      switch(input$species,
-             'fr' = select(df, flow_cfs, floodplain_acres = FR_floodplain_acres),
-             'sr' = select(df, flow_cfs, floodplain_acres = SR_floodplain_acres),
-             'st' = select(df, flow_cfs, floodplain_acres = ST_floodplain_acres))
+      if(input$watershed %in% c('Upper Sacramento River', 'Upper-mid Sacramento River',
+                                'Lower-mid Sacramento River', 'Lower Sacramento River')){
+        df %>% 
+          mutate(floodplain_acres = square_meters_to_acres(floodplain_sq_meters)) %>% 
+          select(flow_cfs, floodplain_acres)
+      } else{
+        switch(input$species,
+               'fr' = select(df, flow_cfs, floodplain_acres = FR_floodplain_acres),
+               'sr' = select(df, flow_cfs, floodplain_acres = SR_floodplain_acres),
+               'st' = select(df, flow_cfs, floodplain_acres = ST_floodplain_acres))
+      }
+
     }
     
   })
