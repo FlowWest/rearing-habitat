@@ -27,16 +27,16 @@ fp_UI <- function(id) {
              tabsetPanel(
                tabPanel('Hydrology', 
                         h6('CALSIM modeled flow 1980-1999'),
-                        plotlyOutput(ns('flow_summary'))),
+                        shinycssloaders::withSpinner(plotlyOutput(ns('flow_summary')), type = 8, color = '#AAAAAA')),
                tabPanel('Floodplain Activation', 
                         h6('CALSIM modeled flow 1980-1999'),
-                        plotlyOutput(ns('habitat_time'))),
+                        shinycssloaders::withSpinner(plotlyOutput(ns('habitat_time')), type = 8, color = '#AAAAAA')),
                tabPanel('Flow to Floodplain Area', 
-                        plotlyOutput(ns('flow2area_plt')))
+                        shinycssloaders::withSpinner(plotlyOutput(ns('flow2area_plt')), type = 8, color = '#AAAAAA'))
              )),
       column(width = 12, class = 'col-md-4',
              h4('Habitat Extents'),
-             leafletOutput(ns('extents'), height = '500px'))
+             shinycssloaders::withSpinner(leafletOutput(ns('extents'), height = '500px'), type = 8, color = '#AAAAAA'))
     )
   )
 }

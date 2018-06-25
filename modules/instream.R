@@ -88,13 +88,13 @@ instreamUI <- function(id) {
                       tabsetPanel(
                         tabPanel('Escapement', 
                                  tags$h6('Grand Tab Escapement - Fall', style = 'width: 400px;'),
-                                 plotlyOutput(ns('grand_plot'))),
+                                 shinycssloaders::withSpinner(plotlyOutput(ns('grand_plot')), type = 8, color = '#AAAAAA')),
                         tabPanel('Instream Habitat', 
                                  tags$h6('Instream Flow to Area Relationship'),
-                                 plotlyOutput(ns('wua'))),
+                                 shinycssloaders::withSpinner(plotlyOutput(ns('wua')), type = 8, color = '#AAAAAA')),
                         tabPanel('Hydrology', 
                                  tags$h6('CALSIM modeled flow 1980-1999'),
-                                 plotlyOutput(ns('flow_summary')))
+                                 shinycssloaders::withSpinner(plotlyOutput(ns('flow_summary')), type = 8, color = '#AAAAAA'))
                       ))
              ))
     )
