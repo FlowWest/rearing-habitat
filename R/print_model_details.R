@@ -17,6 +17,7 @@ print_model_details <- function(ws, species) {
   
   switch(species,
          'fr' = switch(watershed_method,
+                       'full_model_t' = "The entire mapped rearing extent of 54.33 miles was modeled by TID and MID using a TUFLOW hydraulic model with 1D channel and 2D overbank components. This approach directly modeled  inundated floodplain area.",
                        'full_model_nmfs' = sprintf('The entire mapped rearing extent of %.2f miles was modeled using %s. The high quality depth and high quality velocity ("Pref11") "BankArea" result was used as floodplain area. High quality velocities were assumed to be less than or equal to 0.15 meters per second, and high quality depths were assumed to be between 0.2 meters and 1.5 meters.', 
                                               watershed_doc_vars$FR_rearing_length_mi, 
                                               watershed_doc_vars$model_name),
