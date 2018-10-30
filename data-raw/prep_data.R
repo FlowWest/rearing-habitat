@@ -28,7 +28,7 @@ median_flows <- cvpiaFlow::flows_cfs %>%
   rename(rearing_flow = `FALSE`, spawning_flow = `TRUE`) %>% 
   filter(watershed %in% spawning_locations)
 
-median_fry_hab <- pmap_dbl(list(watershed = median_flows$watershed, species = 'fr', life_stage = 'fry', flow = median_flows$rearing_flow, month = 1), 
+median_fry_hab <- pmap_dbl(list(watershed = median_flows$watershed, species = 'fr', life_stage = 'fry', flow = median_flows$rearing_flow), 
                            cvpiaHabitat::set_instream_habitat) %>% square_meters_to_acres
 
 median_spawn_hab <- pmap_dbl(list(watershed = median_flows$watershed, species = 'fr', flow = median_flows$spawning_flow, month = 1), 
@@ -129,8 +129,8 @@ cos_r <- data.frame(flow = flows,
 
 flows = seq(3250, 31000, length.out = 100)
 spawn = square_meters_to_acres(set_spawning_habitat(watershed = 'Upper Sacramento River', species = 'fr', flow = flows, month = 1))
-fry = square_meters_to_acres(set_instream_habitat(watershed = 'Upper Sacramento River', species = 'fr', life_stage = 'fry', flow = flows, month = 1))
-juv = square_meters_to_acres(set_instream_habitat(watershed = 'Upper Sacramento River', species = 'fr', life_stage = 'juv', flow = flows, month = 1))
+fry = square_meters_to_acres(set_instream_habitat(watershed = 'Upper Sacramento River', species = 'fr', life_stage = 'fry', flow = flows))
+juv = square_meters_to_acres(set_instream_habitat(watershed = 'Upper Sacramento River', species = 'fr', life_stage = 'juv', flow = flows))
 up_sac <- data.frame(flow = flows,
                     spawn = spawn,
                     fry = fry,
