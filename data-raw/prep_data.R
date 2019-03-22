@@ -82,7 +82,7 @@ upmidsac_hab %>%
 
 # others
 # minus sac and bypasses
-x1 <- x[c(-6, -11, -14, -7, -12, -20), ]
+x1 <- x[c(-6, -10, -11, -14, -7, -12, -20), ]
 ll <- list(min_f = x1$min_flow, max_f = x1$max_flow, watersed = x1$watersed)
 dd <- map2(x1$min_flow, x1$max_flow, function(x, y) {seq(x, y, length.out = 50)})
 
@@ -138,15 +138,32 @@ up_sac <- data.frame(flow = flows,
                     watershed = rep('Upper Sacramento River', 100),
                     stringsAsFactors = FALSE)
 
-trib_hab %>% 
+flows = seq(0, 4500, length.out = 50)
+spawn = square_meters_to_acres(set_spawning_habitat(watershed = 'Yuba River', species = 'fr', flow = flows))
+fry = square_meters_to_acres(set_instream_habitat(watershed = 'Yuba River', species = 'fr', life_stage = 'fry', flow = flows))
+juv = square_meters_to_acres(set_instream_habitat(watershed = 'Yuba River', species = 'fr', life_stage = 'juv', flow = flows))
+yuba <- data.frame(flow = flows,
+                     spawn = spawn,
+                     fry = fry,
+                     juv = juv,
+                     watershed = rep('Yuba River', 50),
+                     stringsAsFactors = FALSE)
+
+
+
+filter(trib_hab, watershed != 'Yuba River') %>% 
   bind_rows(upmidsac_hab) %>% 
   bind_rows(san_j) %>% 
   bind_rows(cos_r) %>% 
-  bind_rows(up_sac) %>% write_rds('data/flow_to_acres.rds')
+  bind_rows(up_sac) %>% 
+  bind_rows(yuba) %>% 
+  write_rds('data/flow_to_acres.rds')
 
-read_rds('data/flow_to_acres.rds') %>%   
+flow_to_acres <- read_rds('data/flow_to_acres.rds') 
+flow_to_acres %>%   
+  filter(watershed == 'Yuba River') %>% 
   gather(type, hab, - flow, - watershed) %>% 
   ggplot(aes(x = flow, y = hab, color = type)) +
-  geom_line() +
-  facet_wrap(~watershed, scales = 'free')
+  geom_line() 
+  # facet_wrap(~watershed, scales = 'free')
   

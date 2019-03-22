@@ -32,7 +32,9 @@ fp_UI <- function(id) {
                         h6('CALSIM modeled flow 1980-1999'),
                         shinycssloaders::withSpinner(plotlyOutput(ns('habitat_time')), type = 8, color = '#AAAAAA')),
                tabPanel('Flow to Floodplain Area', 
-                        shinycssloaders::withSpinner(plotlyOutput(ns('flow2area_plt')), type = 8, color = '#AAAAAA'))
+                        shinycssloaders::withSpinner(plotlyOutput(ns('flow2area_plt')), type = 8, color = '#AAAAAA')),
+               tabPanel('Modeling Details', 
+                        htmlTemplate('templates/fp_modeling_details2.html'))
              )),
       column(width = 12, class = 'col-md-4',
              h4('Habitat Extents'),
